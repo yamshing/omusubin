@@ -16,6 +16,7 @@ Makefile.in
 .libs/
 *.l[ao]
 *~
+**/*.o
 compile
 src/omusubin
 src/omusubin.exe
