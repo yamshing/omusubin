@@ -16,13 +16,16 @@ omusubin need conf file
 
 ## Format of conf file
 
-make list of file to be inserted
+make list of file to be inserted between FILE and END_FILE
  
 FILE
+ 
  [file name(file id)] [file extension] [file path]
- ...
+ 
 END_FILE
 
+set target executable binary file path after TARGET
+ 
 TARGET [executable binary file path]
 
 ## Example : see the format in test/test/asset/test1_omusubin.conf
