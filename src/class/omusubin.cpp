@@ -309,13 +309,18 @@ void Omusubin::dump_ehdr(Elf64_Ehdr *ehdr){
  
 bool Omusubin::Load(std::string& target_file_name){
 	 
-	double index = GetExeSize(target_file_name);
+	unsigned int index = GetExeSize(target_file_name);
+	if (index % 16 != 0) {
+		//header offset is not at the head of the line
+		index += 8;
+	} 
 	 
 	std::ifstream is_index( target_file_name, std::ios::in | std::ios::binary );
 	std::istreambuf_iterator<char>it_index(is_index);
 	for (double i = 0; i < index; ++i) {
 		it_index ++;
 	}
+	
 	 
 	std::vector<unsigned char> buffer(it_index, {});
 	std::stringstream ss;
