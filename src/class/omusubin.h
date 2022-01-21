@@ -33,7 +33,11 @@ public:
 	 
 	void GetBinDataByKey(std::string& key, std::vector<unsigned char>& out_vec)
 	{
-		out_vec = m_bin_data_map[key];
+		out_vec = {};
+		 
+		if (m_bin_data_map.find(key) != m_bin_data_map.end()) {
+			out_vec = m_bin_data_map[key];
+		}
 	}
 	 
 	void GetBinDataMap(std::unordered_map<std::string, std::vector<unsigned char>>& out_map)
