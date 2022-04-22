@@ -316,11 +316,14 @@ bool Omusubin::Load(std::string& target_file_name){
 	} 
 	 
 	std::ifstream is_index( target_file_name, std::ios::in | std::ios::binary );
-	std::istreambuf_iterator<char>it_index(is_index);
+	std::istreambuf_iterator<char>it_index(is_index), it_end;
 	for (double i = 0; i < index; ++i) {
 		it_index ++;
 	}
-	
+	bool omusubi_not_found = (it_index == it_end);
+	if (omusubi_not_found) {
+		return false;
+	}
 	 
 	std::vector<unsigned char> buffer(it_index, {});
 	std::stringstream ss;
