@@ -91,69 +91,80 @@ void Omusubin::InsertFileToTarget(){
 			os_app.write(reinterpret_cast<char*>(&input_zero), 1);
 		}
 		for (int i = 0; i < m_file_id_vec.size(); ++i) {
-			std::string file_path = m_file_path_vec[i];
+			std::string file_path_str = m_file_path_vec[i];
 			 
-			{
-				std::string file_id = m_file_id_vec[i];
-				 
-				//std::cout << "file_id (in omusubin.cpp) " << file_id << std::endl;
-				 
-				int file_id_size = file_id.size();
-				int padding_size = 0;
-				if (file_id_size <= 16) {
-					padding_size = 16 - file_id_size;
-				}
-				os_app.write(file_id.c_str(),file_id_size);
-				for (int j = 0; j < padding_size; ++j) {
-					os_app.write(reinterpret_cast<char*>(&input_zero), 1);
-				}
+			std::vector<std::string> file_split_vec;
+			 
+			std::istringstream f(file_path_str);
+			std::string s;
+			 
+			while (getline(f, s, ',')) {
+				file_split_vec.push_back(s);
 			}
 			 
-			{
-				std::string file_type = m_file_type_vec[i];
-				 
-				//std::cout << "file_type (in omusubin.cpp) " << file_type << std::endl;
-				 
-				int file_type_size = file_type.size();
-				int padding_size = 0;
-				if (file_type_size <= 16) {
-					padding_size = 16 - file_type_size;
+			for (std::string file_path : file_split_vec) {
+				{
+					std::string file_id = m_file_id_vec[i];
+
+					//std::cout << "file_id (in omusubin.cpp) " << file_id << std::endl;
+
+					int file_id_size = file_id.size();
+					int padding_size = 0;
+					if (file_id_size <= 16) {
+						padding_size = 16 - file_id_size;
+					}
+					os_app.write(file_id.c_str(),file_id_size);
+					for (int j = 0; j < padding_size; ++j) {
+						os_app.write(reinterpret_cast<char*>(&input_zero), 1);
+					}
 				}
-				os_app.write(file_type.c_str(),file_type_size);
-				for (int j = 0; j < padding_size; ++j) {
-					os_app.write(reinterpret_cast<char*>(&input_zero), 1);
+
+				{
+					std::string file_type = m_file_type_vec[i];
+
+					//std::cout << "file_type (in omusubin.cpp) " << file_type << std::endl;
+
+					int file_type_size = file_type.size();
+					int padding_size = 0;
+					if (file_type_size <= 16) {
+						padding_size = 16 - file_type_size;
+					}
+					os_app.write(file_type.c_str(),file_type_size);
+					for (int j = 0; j < padding_size; ++j) {
+						os_app.write(reinterpret_cast<char*>(&input_zero), 1);
+					}
 				}
-			}
-			 
-			std::ifstream file_is( file_path, std::ios::in | std::ios::binary );
-			 
-			if (file_is.good()) {
-				 
-				//ifstr.seekg( 0, std::ios_base::end );
-				 
-				std::stringstream file_ss;
-				file_ss <<  file_is.rdbuf();
-				 
-				uint64_t file_size = file_is.tellg();
-				 
-				int file_padding_size = 16 - ((file_size + 8) % 16);
-				 
-				os_app.put((file_size>>56)& 0xFF);
-				os_app.put((file_size>>48)& 0xFF);
-				os_app.put((file_size>>40)& 0xFF);
-				os_app.put((file_size>>32)& 0xFF);
-				os_app.put((file_size>>24)& 0xFF);
-				os_app.put((file_size>>16)& 0xFF);
-				os_app.put((file_size>>8)& 0xFF);
-				os_app.put((file_size )& 0xFF);
-				 
-				os_app << file_ss.str();
-				 
-				for (int j = 0; j < file_padding_size; ++j) {
-					os_app.write(reinterpret_cast<char*>(&input_zero), 1);
+
+				std::ifstream file_is( file_path, std::ios::in | std::ios::binary );
+
+				if (file_is.good()) {
+
+					//ifstr.seekg( 0, std::ios_base::end );
+
+					std::stringstream file_ss;
+					file_ss <<  file_is.rdbuf();
+
+					uint64_t file_size = file_is.tellg();
+
+					int file_padding_size = 16 - ((file_size + 8) % 16);
+
+					os_app.put((file_size>>56)& 0xFF);
+					os_app.put((file_size>>48)& 0xFF);
+					os_app.put((file_size>>40)& 0xFF);
+					os_app.put((file_size>>32)& 0xFF);
+					os_app.put((file_size>>24)& 0xFF);
+					os_app.put((file_size>>16)& 0xFF);
+					os_app.put((file_size>>8)& 0xFF);
+					os_app.put((file_size )& 0xFF);
+
+					os_app << file_ss.str();
+
+					for (int j = 0; j < file_padding_size; ++j) {
+						os_app.write(reinterpret_cast<char*>(&input_zero), 1);
+					}
+
 				}
-				 
-			}
+			} //end for file_split_vec
 		}
 		 
 	}else{
@@ -388,7 +399,15 @@ bool Omusubin::Load(std::string& target_file_name){
 		 
 		//val_vec.push_back(char_val_vec);
 		 
-		m_bin_data_map[id_ss.str()] = char_val_vec;
+		if (m_bin_data_map.find(id_ss.str()) != m_bin_data_map.end()) {
+			 
+			m_bin_data_map[id_ss.str()].insert(m_bin_data_map[id_ss.str()].end(), char_val_vec.begin(), char_val_vec.end());
+			 
+		}else{
+			m_bin_data_map[id_ss.str()] = char_val_vec;
+		}
+		 
+		 
 		m_file_extention_map[id_ss.str()] = type_ss.str(); 
 		 
 		buf_i += data_size;
