@@ -4,6 +4,7 @@ automake --add-missing --copy;
 autoconf; 
 ./configure;
  
+ 
 make;
  
 #case "$(uname -s)" in
