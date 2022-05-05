@@ -3,6 +3,7 @@
  
 #include "test.h"
 #include <iostream>
+#include <sstream>
 #include <string>
  
 void test_array_load_bin()

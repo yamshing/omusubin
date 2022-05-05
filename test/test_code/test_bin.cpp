@@ -3,6 +3,7 @@
  
 #include "test.h"
 #include <iostream>
+#include <sstream>
 #include <string>
  
 void test_save_load_bin()
@@ -13,6 +14,11 @@ void test_save_load_bin()
 
 	std::string test_conf = "./test_asset/test1_omusubin_win.conf";
 	std::string target_bin_file_name = "./test_asset/a.exe_omusubin.exe";
+#elif __APPLE__	
+	 
+	std::string test_conf = "./test_asset/test1_omusubin.conf";
+	std::string target_bin_file_name = "./test_asset/a.out_omusubin.exe";
+	 
 #else
 
 	std::string test_conf = "./test_asset/test1_omusubin.conf";

@@ -1,9 +1,12 @@
 
 #include "omusubin.h" 
 #include <cmath>
+#include <sstream>
  
 #ifdef __MINGW64__
 #include <windows.h>
+#elif __APPLE__
+ 
 #else
 #include <elf.h>
 #endif
@@ -260,6 +263,8 @@ double Omusubin::GetExeSize(std::string& target_file_name)
 	 
 	index = exesize;
 	 
+#elif __APPLE__
+	 
 #else
 
 	Elf64_Ehdr *ehdr;
@@ -291,6 +296,8 @@ double Omusubin::GetExeSize(std::string& target_file_name)
 
 #ifdef __MINGW64__
 
+#elif __APPLE__
+ 
 #else
  
 void Omusubin::dump_ehdr(Elf64_Ehdr *ehdr){

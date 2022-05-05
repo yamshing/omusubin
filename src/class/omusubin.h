@@ -10,6 +10,8 @@
 
 #ifdef __MINGW64__
 
+#elif __APPLE__
+ 
 #else
 
 #include <elf.h>
@@ -56,6 +58,8 @@ private:
 
 #ifdef __MINGW64__
 
+#elif __APPLE__
+	 
 #else
 	void dump_ehdr(Elf64_Ehdr *ehdr);
 #endif
