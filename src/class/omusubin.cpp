@@ -284,10 +284,68 @@ double Omusubin::GetExeSize(std::string& target_file_name)
 	}
 	mach_header = (mach_header_64 *)buf;
 	 
-	std::cout << "mach_header->ncmds (in omusubin.cpp) " << mach_header->ncmds << std::endl;
-	std::cout << "mach_header->sizeofcmds (in omusubin.cpp) " << mach_header->sizeofcmds << std::endl;
+	size_t header_sz = sizeof(*mach_header);
+	size_t sz = 0;
+	 
+	int cmds = mach_header->ncmds;
+	 
+	FILE* fp = fopen( target_file_name.c_str(), "rb" );
+	void* bin = NULL;
+	 
+	size = 0;
+	if( fp ) {
+		fseek( fp, 0, SEEK_END );
+		size = (int)ftell( fp );
+		rewind(fp);
+		bin = malloc( size );
+		fread( bin, 1, size, fp );
+		fclose( fp ); fp = 0;
+	}
+	 
+	load_command* cmd = (load_command*)bin ;
+	 
+	cmd = (load_command*)( (char*)cmd + header_sz);
+	 
+	printf( "Load Command(s)\n" );
+	for( int i = 0; i < cmds; ++i ) {
+		printf( "  [%2d] : ", i );
+		switch( cmd->cmd ) {
+			case LC_SEGMENT:
+				//dispLCSegment32( (segment_command*)cmd );
+				break;
+			case LC_SEGMENT_64:
+				{
+					segment_command_64* lc = (segment_command_64*)cmd;
+					printf( "LC_SEGMENT_64\n" );
+					printf( "    %s\n", lc->segname );
+					printf( "    vmaddr=0x%016llx, vmsize=0x%016llx\n", lc->vmaddr, lc->vmsize );
+					printf( "    fileoff=0x%016llx, filesize=0x%016llx\n", lc->fileoff, lc->filesize );
+					printf( "    maxprot=0x%08x, initprot=0x%08x\n", lc->maxprot, lc->initprot );
+					printf( "    nSect(s)=%d\n", lc->nsects );
+					 
+					std::cout << "lc->filesize (in omusubin.cpp) " << lc->filesize << std::endl;
+					std::cout << "lc->vmsize (in omusubin.cpp) " << lc->vmsize << std::endl;
+
+					sz += lc->filesize;
+					 
+					break;
+				}
+			default:
+				printf( "0x%x, %d\n", cmd->cmd, cmd->cmdsize );
+
+				break;
+		}
+		 
+		//sz += cmd->cmdsize;
+		//std::cout << "cmd->cmdsize (in omusubin.cpp) " << cmd->cmdsize << std::endl;
+		 
+		cmd = (load_command*)( (char*)cmd + cmd->cmdsize);
+	}
+	std::cout << "sz (in omusubin.cpp) " << sz << std::endl;
 	 
 	is_header.close();
+	 
+	index = sz;
 	 
 #else
 

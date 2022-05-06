@@ -27,7 +27,7 @@ void test_save_load_bin()
 
 	omusubin.InsertFromConf(test_conf);
 	 
-	/*omusubin.Load(target_bin_file_name);
+	omusubin.Load(target_bin_file_name);
 	std::vector<unsigned char> out_bin;
 	std::string data_name = "text1";
 	 
@@ -43,7 +43,6 @@ void test_save_load_bin()
 	std::string expected = "abcdefg\n";
 	 
 	ASSERTSTR(expected, text, "text load ok");
-	*/
 	 
 }
  
