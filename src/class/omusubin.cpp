@@ -6,6 +6,7 @@
 #ifdef __MINGW64__
 #include <windows.h>
 #elif __APPLE__
+#include <mach-o/loader.h> 
  
 #else
 #include <elf.h>
@@ -71,6 +72,11 @@ void Omusubin::InsertFileToTarget(){
 		os.close();
 
 		double file_size_byte = GetExeSize(m_target_file_name);
+		 
+		if (file_size_byte == 0) {
+			std::cout << "exe size error  " << std::endl;
+			return;
+		}
 		 
 		//std::cout << "file_size_byte (in omusubin.cpp) " << m_target_file_name << ',' <<  file_size_byte << std::endl;
 		 
@@ -264,6 +270,24 @@ double Omusubin::GetExeSize(std::string& target_file_name)
 	index = exesize;
 	 
 #elif __APPLE__
+	struct mach_header_64* mach_header; 
+	 
+	std::cout << "mach header ready (in omusubin.cpp) "  << std::endl;
+	 
+	std::ifstream is_header( target_file_name, std::ios::in | std::ios::binary );
+	std::istreambuf_iterator<char>it_header(is_header);
+	int size = 64;
+	unsigned char buf[size];
+	for (int i = 0; i < size; ++i) {
+		buf[i] = *it_header;
+		it_header ++;
+	}
+	mach_header = (mach_header_64 *)buf;
+	 
+	std::cout << "mach_header->ncmds (in omusubin.cpp) " << mach_header->ncmds << std::endl;
+	std::cout << "mach_header->sizeofcmds (in omusubin.cpp) " << mach_header->sizeofcmds << std::endl;
+	 
+	is_header.close();
 	 
 #else
 
