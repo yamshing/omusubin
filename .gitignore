@@ -22,3 +22,4 @@ src/omusubin
 src/omusubin.exe
 test/test
 *.log
+**/*.DS_Store
