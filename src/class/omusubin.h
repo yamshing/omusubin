@@ -33,13 +33,16 @@ public:
 
 	bool Load(std::string& target_file_name);
 	 
-	void GetBinDataByKey(std::string& key, std::vector<unsigned char>& out_vec)
+	bool GetBinDataByKey(std::string& key, std::vector<unsigned char>& out_vec)
 	{
 		out_vec = {};
 		 
 		if (m_bin_data_map.find(key) != m_bin_data_map.end()) {
 			out_vec = m_bin_data_map[key];
+			return true;
 		}
+		 
+		return false;
 	}
 	 
 	void GetBinDataMap(std::unordered_map<std::string, std::vector<unsigned char>>& out_map)
